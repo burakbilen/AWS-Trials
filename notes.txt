@@ -1,0 +1,46 @@
+# Install necessary programs
+- terraform
+- aws cli
+- eksctl
+- kubectl
+
+# Task-1 notes
+# init terraform
+terraform init
+
+# before applying the files set the my_ip variable to your IP (whatismyip.com)
+
+# apply the .tf files
+terraform apply
+
+# after the resources are created get the vpc-id from aws console and change the value of id in
+# bottlerocket.yaml file
+vpc:
+  id: "vpc-0c3d73c073dc1a45e"
+
+# Task-2 notes
+# create eks cluster
+eksctl create cluster -f bottlerocket.yaml
+
+# show clusters
+eksctl get clusters -v 4
+
+# show nodes
+kubectl get nodes
+
+# deploy nginx container
+kubectl apply -f deployment.yaml
+
+# expose nginx as service
+kubectl expose deployment/my-nginx --port=80 --target-port=80 --name=my-nginx-service --type=LoadBalancer
+
+# show services
+kubectl get svc --all-namespaces
+# With the EXTERNAL-IP of my-nginx-service you can reach the service
+
+# At the end delete the EKS cluster and other resources
+# delete eks cluster
+eksctl delete cluster --region=eu-central-1 --name=tradition-cluster --wait
+
+# delete other resources
+terraform destroy
